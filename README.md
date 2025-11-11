@@ -3,6 +3,7 @@
 
 ## Daftar Isi
 - [README.md Tugas 7](#tugas-7-pbp)
+- [README.md Tugas 8](#tugas-8-pbp)
 
 <details>
 <summary>TUGAS 7 PBP</summary>
@@ -65,5 +66,61 @@ Hot reload memperbarui kode dan langsung menampilkan perubahan tanpa menghapus s
 
 Hot restart menjalankan ulang seluruh aplikasi dari awal dan menghapus state.
 Hot reload digunakan saat ingin melihat perubahan cepat pada tampilan atau logika tanpa kehilangan data sementara.
+
+</details>
+
+<details>
+<summary>TUGAS 8 PBP</summary>
+
+## TUGAS 8 PBP
+
+**1. Jelaskan perbedaan antara Navigator.push() dan Navigator.pushReplacement() pada Flutter. Dalam kasus apa sebaiknya masing-masing digunakan pada aplikasi Football Shop kamu?**
+
+`Navigator.push()` berfungsi untuk menambahkan halaman baru di atas halaman saat ini ke dalam navigation stack. Artinya, ketika pengguna berpindah ke halaman baru, mereka masih bisa kembali ke halaman sebelumnya menggunakan tombol back.
+
+Sedangkan `Navigator.pushReplacement()` akan mengganti halaman saat ini dengan halaman baru, sehingga halaman sebelumnya dihapus dari stack dan pengguna tidak bisa kembali ke halaman tersebut.
+
+Contoh penggunaan di aplikasi Football Shop:
+
+`Navigator.push()` digunakan saat berpindah dari halaman utama ke halaman detail produk, karena pengguna mungkin ingin kembali ke halaman utama setelah melihat detail.
+
+`Navigator.pushReplacement()` digunakan setelah proses login atau logout, karena tidak diperlukan kembali ke halaman login setelah berhasil masuk ke aplikasi.
+
+**2. Bagaimana kamu memanfaatkan hierarchy widget seperti Scaffold, AppBar, dan Drawer untuk membangun struktur halaman yang konsisten di seluruh aplikasi?**
+
+Dalam aplikasi Football Shop, struktur halaman dibangun secara konsisten dengan memanfaatkan widget hierarchy sebagai berikut:
+
+- Scaffold: digunakan sebagai kerangka utama untuk setiap halaman, menyediakan struktur dasar seperti AppBar, body, dan Drawer.
+
+- AppBar: menampilkan judul halaman dan ikon navigasi yang sama di seluruh aplikasi, menjaga konsistensi tampilan antarhalaman.
+
+- Drawer: digunakan untuk navigasi antarhalaman seperti Home, Add Product, dan Product List, sehingga pengguna dapat dengan mudah berpindah tanpa kembali ke halaman utama.
+
+Dengan struktur ini, seluruh halaman memiliki tata letak dan pengalaman pengguna yang seragam.
+
+**3. Dalam konteks desain antarmuka, apa kelebihan menggunakan layout widget seperti Padding, SingleChildScrollView, dan ListView saat menampilkan elemen-elemen form? Berikan contoh penggunaannya dari aplikasi kamu.**
+
+- Padding  
+Digunakan untuk memberi jarak antar elemen agar tampilan tidak terlalu rapat dan lebih nyaman dilihat.
+Contoh: Pada halaman form penambahan produk, setiap TextFormField dibungkus dengan Padding agar tidak menempel di tepi layar.
+
+- SingleChildScrollView  
+Membuat halaman dapat di-scroll ketika kontennya terlalu panjang.
+Contoh: Digunakan pada form tambah produk agar pengguna tetap bisa mengakses semua input meskipun layar kecil atau keyboard muncul.
+
+- ListView  
+Cocok untuk menampilkan daftar elemen yang jumlahnya dinamis, seperti daftar produk.
+Contoh: Halaman Product List menampilkan semua produk menggunakan ListView.builder() agar tampilan tetap efisien meskipun jumlah produk banyak.
+
+**4. Bagaimana kamu menyesuaikan warna tema agar aplikasi Football Shop memiliki identitas visual yang konsisten dengan brand toko?**  
+
+Untuk menjaga identitas visual Football Shop, tema warna aplikasi disesuaikan dengan warna khas brand toko. Pada aplikasi Football Shop yang saya implementasi, saya menggunakan warna biru standar dari Flutter sebagai warna utama yang biasanya digunakan untuk elemen-elemen seperti AppBar, tombol utama, dan ikon navigasi. Kemudian saya gunakan warna `Colors.blueAccent[400]` yaitu warna biru yang lebih cerah daripada biru utama sebagai warna sekunder yang biasanya digunakan untuk elemen interaktif seperti tombol aksi, highlight, dan ikon aktif.
+
+Implementasi ini dapat dilihat di `main.dart` pada bagian `MaterialApp`.  
+```
+theme: ThemeData(
+         colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(secondary: Colors.blueAccent[400]),
+      ),
+```
 
 </details>
