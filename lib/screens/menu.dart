@@ -10,8 +10,9 @@ class MyHomePage extends StatelessWidget {
 
   final List<ItemHomepage> items = [
     ItemHomepage("All Products", Icons.grid_view, Colors.blue),
-    ItemHomepage("Create Products", Icons.add, Colors.green),
-    ItemHomepage("My Products", Icons.shopping_bag, Colors.red),
+    ItemHomepage("Create Products", Icons.add, Colors.red),
+    ItemHomepage("My Products", Icons.shopping_bag, Colors.green),
+    ItemHomepage("Logout", Icons.logout, Colors.deepOrange),
   ];
 
   @override
@@ -22,14 +23,14 @@ class MyHomePage extends StatelessWidget {
       appBar: AppBar(
         // Judul aplikasi "Football News" dengan teks putih dan tebal.
         title: const Text(
-          'Football Shop',
+          'GoalMart',
           style: TextStyle(
-            color: Colors.white,
+            color: Colors.black,
             fontWeight: FontWeight.bold,
           ),
         ),
         // Warna latar belakang AppBar diambil dari skema warna tema aplikasi.
-        backgroundColor: Theme.of(context).colorScheme.primary,
+        backgroundColor: Colors.yellow,
       ),
 
       drawer: const LeftDrawer(),

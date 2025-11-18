@@ -1,10 +1,6 @@
 # Football Shop
 **Felesia Junelus - 2406354152 - PBP C**  
 
-## Daftar Isi
-- [README.md Tugas 7](#tugas-7-pbp)
-- [README.md Tugas 8](#tugas-8-pbp)
-
 <details>
 <summary>TUGAS 7 PBP</summary>
 
@@ -122,5 +118,85 @@ theme: ThemeData(
          colorScheme: ColorScheme.fromSwatch(primarySwatch: Colors.blue).copyWith(secondary: Colors.blueAccent[400]),
       ),
 ```
+
+</details>
+
+<details>
+<summary>TUGAS 9 PBP</summary>
+
+**1. Jelaskan mengapa kita perlu membuat model Dart saat mengambil/mengirim data JSON? Apa konsekuensinya jika langsung memetakan Map<String, dynamic> tanpa model (terkait validasi tipe, null-safety, maintainability)?**
+
+Kita perlu membuat model Dart untuk mengubah data JSON yang tidak terstruktur menjadi objek Dart yang memiliki tipe data yang jelas (strongly-typed).
+
+Validasi Tipe & Null-Safety: Model memastikan bahwa data yang kita gunakan memiliki tipe yang benar (misalnya price harus int, bukan String). Dart akan memberikan peringatan saat compile-time jika kita mencoba mengakses properti yang salah atau memperlakukan tipe data secara keliru. Tanpa model, kesalahan ini baru akan muncul saat aplikasi dijalankan (runtime error), yang bisa menyebabkan aplikasi crash.
+
+Maintainability (Kemudahan Pemeliharaan): Dengan model, struktur data terpusat di satu file. Jika API berubah (misalnya nama field JSON berubah), kita hanya perlu memperbaikinya di satu file model saja, tidak perlu menelusuri seluruh kode aplikasi untuk mengganti key string satu per satu.
+
+Konsekuensi tanpa Model: Jika kita hanya menggunakan Map<String, dynamic>, kita kehilangan fitur autocomplete di IDE, rentan terhadap kesalahan pengetikan (typo) pada key (misal data['nama'] vs data['name']), dan kode menjadi sulit dibaca serta dikelola seiring bertambahnya kompleksitas aplikasi.
+
+**2. Apa fungsi package http dan CookieRequest dalam tugas ini? Jelaskan perbedaan peran http vs CookieRequest.**
+
+Package http: Berfungsi untuk melakukan permintaan HTTP standar (GET, POST, PUT, DELETE) ke server. Dalam tugas ini, http digunakan (secara langsung atau di balik layar) untuk mengirim data formulir registrasi ke endpoint Django. http bersifat stateless, artinya ia tidak menyimpan informasi sesi antar permintaan secara otomatis.
+
+Package CookieRequest (dari pbp_django_auth): Berfungsi sebagai wrapper (pembungkus) di atas protokol HTTP yang dirancang khusus untuk berinteraksi dengan backend Django.
+
+Perbedaan Utama: Perbedaan kuncinya ada pada manajemen sesi/cookies.
+
+http tidak menyimpan cookies secara otomatis. Jika kita login menggunakan http, kita harus menangkap cookie sesi secara manual dan menyertakannya di header setiap permintaan berikutnya.
+
+CookieRequest secara otomatis menyimpan session cookies yang diterima dari Django saat login dan menyertakannya kembali pada setiap permintaan berikutnya (GET/POST). Ini sangat penting agar Django mengenali pengguna yang sedang login (stateful session).
+
+**3. Jelaskan mengapa instance CookieRequest perlu untuk dibagikan ke semua komponen di aplikasi Flutter.**
+
+Instance CookieRequest perlu dibagikan (biasanya menggunakan Provider) karena objek ini menyimpan state autentikasi (seperti cookie sesi dan status login).
+
+Jika kita membuat instance CookieRequest baru di setiap halaman atau widget:
+
+Informasi sesi yang didapat saat login akan hilang.
+
+Setiap halaman akan dianggap sebagai "pengguna baru" yang belum login oleh server Django.
+
+Kita tidak bisa mengakses endpoint yang membutuhkan autentikasi (seperti melihat daftar item milik pengguna atau menambah item) karena cookie sesi tidak terbawa.
+
+Dengan membagikan satu instance yang sama (Singleton pattern via Provider), semua widget di aplikasi dapat mengakses sesi login yang konsisten.
+
+**4.  Jelaskan konfigurasi konektivitas yang diperlukan agar Flutter dapat berkomunikasi dengan Django. Mengapa kita perlu menambahkan 10.0.2.2 pada ALLOWED_HOSTS, mengaktifkan CORS dan pengaturan SameSite/cookie, dan menambahkan izin akses internet di Android? Apa yang akan terjadi jika konfigurasi tersebut tidak dilakukan dengan benar?**
+
+Agar Flutter (terutama di emulator Android) bisa berkomunikasi dengan Django di local computer, diperlukan beberapa konfigurasi:
+
+- 10.0.2.2 pada ALLOWED_HOSTS:
+
+Emulator Android menjalankan virtual machine sendiri. localhost di dalam emulator merujuk ke emulator itu sendiri, bukan komputer kita. 10.0.2.2 adalah IP khusus alias yang disediakan Android untuk mengakses localhost komputer host. Kita perlu menambahkannya ke ALLOWED_HOSTS di Django agar Django mau menerima request dari IP ini.
+
+- CORS (Cross-Origin Resource Sharing):
+
+Diperlukan terutama jika mengakses lewat browser (Flutter Web) atau jika klien dianggap berbeda origin. Ini memberi tahu server Django untuk mengizinkan permintaan resource dari domain/port yang berbeda.
+
+- Pengaturan SameSite dan Secure pada Cookie:
+
+Agar cookie sesi dapat dikirim dan diterima lintas domain (atau antara mobile app dan server lokal), pengaturan cookie seperti SESSION_COOKIE_SAMESITE = 'None' dan CSRF_COOKIE_SAMESITE = 'None' sering diperlukan (terutama di Chrome/Web), atau pengaturan default Django mungkin memblokir cookie tersebut.
+
+- Izin Akses Internet di Android:
+
+Menambahkan <uses-permission android:name="android.permission.INTERNET" /> di AndroidManifest.xml. Tanpa ini, sistem operasi Android akan memblokir aplikasi untuk melakukan koneksi jaringan apa pun demi keamanan.
+
+Jika tidak dikonfigurasi dengan benar: Aplikasi Flutter akan mengalami error seperti Connection Refused, SocketException, atau 403 Forbidden saat mencoba login atau mengambil data, karena server menolak koneksi atau browser memblokir transfer data.
+
+**5. Jelaskan mekanisme pengiriman data mulai dari input hingga dapat ditampilkan pada Flutter.**
+
+1. Input: Pengguna memasukkan data (misal: nama produk, harga) melalui TextFormField di Flutter.
+
+2. Validasi & Serialisasi: Saat tombol simpan ditekan, Flutter memvalidasi input. Jika valid, data dikonversi menjadi format JSON menggunakan jsonEncode.
+
+3. Pengiriman (POST): Flutter mengirim HTTP POST request berisi data JSON tersebut ke endpoint Django (misal: /create-flutter/ atau /add-product-ajax/) menggunakan CookieRequest.
+
+4. Pemrosesan di Django: View Django menerima request, mem-parse JSON, membuat objek model baru, dan menyimpannya ke database. Django mengembalikan respons JSON (misal: status sukses).
+
+5. Fetching (GET): Di halaman daftar produk, Flutter mengirim HTTP GET request ke endpoint JSON Django (misal: /json/).
+
+6. Deserialisasi: Django merespons dengan data JSON berisi daftar produk. Flutter menerima JSON ini dan mengubahnya kembali menjadi objek Dart (List of Product) menggunakan Product.fromJson.
+
+7. Menampilkan: Widget FutureBuilder atau ListView di Flutter menggunakan objek Dart tersebut untuk merender UI dan menampilkan data ke layar.
+
 
 </details>
