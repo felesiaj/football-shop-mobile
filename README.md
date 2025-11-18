@@ -124,6 +124,8 @@ theme: ThemeData(
 <details>
 <summary>TUGAS 9 PBP</summary>
 
+## TUGAS 9 PBP
+
 **1. Jelaskan mengapa kita perlu membuat model Dart saat mengambil/mengirim data JSON? Apa konsekuensinya jika langsung memetakan Map<String, dynamic> tanpa model (terkait validasi tipe, null-safety, maintainability)?**
 
 Kita perlu membuat model Dart untuk mengubah data JSON yang tidak terstruktur menjadi objek Dart yang memiliki tipe data yang jelas (strongly-typed).
@@ -198,5 +200,33 @@ Jika tidak dikonfigurasi dengan benar: Aplikasi Flutter akan mengalami error sep
 
 7. Menampilkan: Widget FutureBuilder atau ListView di Flutter menggunakan objek Dart tersebut untuk merender UI dan menampilkan data ke layar.
 
+**6. Jelaskan mekanisme autentikasi dari login, register, hingga logout. Mulai dari input data akun pada Flutter ke Django hingga selesainya proses autentikasi oleh Django dan tampilnya menu pada Flutter.**
+
+1. Register:  
+Pengguna input data di RegisterPage.  
+Flutter mengirim data via http.post ke endpoint registrasi Django.  
+Django membuat User baru di database.  
+Jika sukses, pengguna diarahkan ke halaman Login.
+
+2. Login:  
+Pengguna input username/password di LoginPage.  
+Flutter memanggil request.login() ke endpoint login Django.  
+Django memverifikasi kredensial. Jika valid, Django membuat session di server dan mengirimkan session ID lewat cookie di header respons.  
+CookieRequest di Flutter menangkap dan menyimpan cookie tersebut secara otomatis. State loggedIn menjadi true.  
+Pengguna diarahkan ke halaman utama (MyHomePage).
+
+3. Logout:  
+Pengguna menekan tombol Logout. 
+Flutter memanggil request.logout() ke endpoint logout Django, menyertakan cookie sesi yang tersimpan.  
+Django menghapus sesi di server.  
+CookieRequest di Flutter menghapus cookie yang disimpan dan mereset state loggedIn.  
+Pengguna diarahkan kembali ke LoginPage.
+
+**7. Jelaskan bagaimana cara kamu mengimplementasikan checklist di atas secara step-by-step!**
+Implementasi dimulai dengan konfigurasi backend Django agar dapat berkomunikasi dengan Flutter. Saya menambahkan library django-cors-headers dan mengonfigurasi settings.py dengan menambahkan IP 10.0.2.2 ke ALLOWED_HOSTS serta mengaktifkan izin kredensial CORS. Selanjutnya, saya membuat views baru (login_ajax, register_ajax, logout_ajax) di views.py yang mengembalikan respons JSON dan menambahkan data username pada respons login untuk keperluan fitur penyaringan (filtering) di sisi klien.
+
+Di sisi frontend Flutter, saya menginstal package provider, pbp_django_auth, dan http, serta menambahkan izin internet pada AndroidManifest.xml. Untuk manajemen state login, saya membungkus root widget aplikasi dengan Provider yang menyediakan satu instance CookieRequest ke seluruh aplikasi. Fitur autentikasi kemudian dibangun dengan membuat halaman LoginPage dan RegisterPage yang mengirim data formulir ke endpoint Django yang telah disiapkan.
+
+Terakhir, saya mengintegrasikan data produk dengan membuat model Dart Product untuk memetakan JSON dari Django. Saya membuat halaman ProductEntryListPage yang mengambil data menggunakan FutureBuilder dan menampilkan daftar produk. Fitur filtering "My Products" diimplementasikan dengan menyaring data produk berdasarkan kesamaan user produk dengan username pengguna yang sedang login. Form tambah produk juga diperbarui agar mengirim data ke server menggunakan request POST, dan navigasi pada halaman utama disesuaikan untuk mengakses fitur-fitur tersebut.
 
 </details>
